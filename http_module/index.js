@@ -20,13 +20,13 @@ let routes = {
   "GET /users": getUsersRoute,
   "GET /emails": getEmailsRoute,
 };
-
-app.use((req, res) => {
+let router = (req, res) => {
   //console.log(req.headers.accept);
   let route = req.method + " " + req.url;
   let handler = routes[route]||noRouteFound;
   handler(req, res);
-});
+}
+app.use(router);
 
 app.listen(PORT, (error) => {
   if (error) {
