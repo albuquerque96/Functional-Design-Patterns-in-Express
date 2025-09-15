@@ -1,25 +1,23 @@
-const http = require("http");
-const express = require("express")
+const express = require("express");
 const users = require("../fixtures/users.json");
 const emails = require("../fixtures/emails.json");
-
+const {sendFormattedResponse} = require("./utils");
 const PORT = process.env.PORT || 3000;
 let app = express();
 
-app.use((req,res)=>{
+app.use((req, res) => {
+  //console.log(req.headers.accept);
   let route = req.method + " " + req.url;
   if (route === "GET /users") {
-    res.end(JSON.stringify(users));
+   sendFormattedResponse(req, res,users);
   } else if (route === "GET /emails") {
-    res.end(JSON.stringify(emails));
+    sendFormattedResponse(req,res,emails);
   } else {
     res.end("You asked for " + route);
   }
 });
 
-let server = http.createServer(app);
-
-server.listen(PORT, (error) => {
+app.listen(PORT, (error) => {
   if (error) {
     console.log(error);
   }
