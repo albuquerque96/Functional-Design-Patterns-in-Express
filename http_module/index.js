@@ -4,7 +4,8 @@ const emails = require("../fixtures/emails.json");
 const { sendFormattedResponse } = require("./utils");
 const PORT = process.env.PORT || 3000;
 let app = express();
-const router = express.Router();
+const emailsRouter = express.Router();
+const usersRouter = express.Router();
 
 let getUsersRoute = (req, res) => {
   res.send(users);
@@ -24,15 +25,23 @@ let noRouteFound = (req, res) => {
   let route = req.method + " " + req.url;
   res.end(res.end("You asked for " + route));
 };
-router.get("/users", getUsersRoute);
-router.get("/emails", getEmailsRoute);
-router.get("/users/:id", getUserRoute);
-router.get("/emails/from/:sender/to/:recipient", (req, res) => {
-  console.log(req.params);
-});
-router.get("/emails/:id", getEmailRoute);
 
-app.use(router);
+let getEmailsFromTo = (req, res) => {
+  let { sender,recipient } = req.params;
+  let emailsFromTo = emails.find((email) => email.from === sender && email.to === recipient);
+  console.log(emailsFromTo);
+  res.status(200).json(emailsFromTo);
+};
+
+usersRouter.get("/users", getUsersRoute);
+usersRouter.get("/users/:id", getUserRoute);
+
+emailsRouter.get("/emails", getEmailsRoute);
+emailsRouter.get("/emails/from/:sender/to/:recipient", getEmailsFromTo);
+emailsRouter.get("/emails/:id", getEmailRoute);
+
+app.use(usersRouter);
+app.use(emailsRouter);
 
 app.listen(PORT, (error) => {
   if (error) {
